@@ -7,7 +7,7 @@
 using namespace std;
 
 void addNode(Node*&, Node*, Node*);
-void deleteNode(Node* &, Node*, int);
+void removeNode(int, Node*, int);
 void searchTree(Node*&, Node*, int);
 void printTree(Node*, int);
 
@@ -73,7 +73,7 @@ int main() {
     cout << "what value do you want to delete?" << endl;
     int toDelete;
     cin >> toDelete;
-    deleteNode(root, root, toDelete);
+    removeNode(0, root, toDelete);
   }
 
   if (strcmp(command, "SEARCH") == 0){
@@ -215,7 +215,70 @@ void printTree(Node* current, int count){
 
 }
 
-void deleteNode(Node* &root, Node* current, int toDelete){
+//vikram and I rewrote the remove function while doign RBT
+void removeNode(int direction, Node* current, int value){
+    if(current->getData() == value){
+        if(current->getRight() == NULL && current->getLeft() == NULL){
+            if(current->getParent() != NULL){
+                if(direction == 0){
+                    current->getParent()->setLeft(NULL);
+                }
+                else if(direction == 1){
+                    current->getParent()->setRight(NULL);
+                }
+            }
+            delete current;
+        }
+        else if(current->getLeft() == NULL){
+            cout << "1" << endl;
+            if(direction == 0){
+                current->getParent()->setLeft(current->getRight());
+            }
+            else if(direction == 1){
+                current->getParent()->setRight(current->getRight());
+            }
+            current->getRight()->setParent(current->getParent());
+            delete current;
+        }
+        else if(current->getRight() == NULL){
+            cout << current->getParent()->getData() << endl;
+            if(direction == 0){
+                current->getParent()->setLeft(current->getLeft());
+            }
+            else if(direction == 1){
+                current->getParent()->setRight(current->getLeft());
+            }
+            current->getLeft()->setParent(current->getParent());
+            delete current;
+        }
+        else{
+            Node* tempNode = current->getRight();
+            int counter = 0;
+            while(tempNode->getLeft() != NULL){
+                tempNode = tempNode->getLeft();
+                counter++;
+            }
+            current->setData(tempNode->getData());
+            if(counter == 0){
+                current->setRight(tempNode->getRight());
+                tempNode->getParent()->setRight(tempNode->getRight());
+            }
+            else{
+                tempNode->getParent()->setLeft(tempNode->getLeft());
+            }
+            delete tempNode;
+        }
+    }
+    else if(current->getData() > value){
+        removeNode(0, current->getLeft(), value);
+    }
+    else if(current->getData() < value){
+        removeNode(1, current->getRight(), value);
+    }
+
+}
+
+//void deleteNode(Node* &root, Node* current, int toDelete){
   /*
     case 1: tree is empty
     case 2: toDelete is root
@@ -227,7 +290,10 @@ void deleteNode(Node* &root, Node* current, int toDelete){
    */
 
   //case 1
-  if (root == NULL){
+
+/*
+if(root == NULL){
+
     cout << "tree is empty" << endl;
   }
 
@@ -308,5 +374,5 @@ void deleteNode(Node* &root, Node* current, int toDelete){
 
 } //function
 
-  
+*/
   
